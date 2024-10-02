@@ -49,11 +49,19 @@ def load_vad_model(device, vad_onset=0.500, vad_offset=0.363, use_auth_token=Non
         )
 
     vad_model = Model.from_pretrained(model_fp, use_auth_token=use_auth_token)
-    hyperparameters = {"onset": vad_onset, 
-                    "offset": vad_offset,
+    # hyperparameters = {"onset": vad_onset, 
+    #                 "offset": vad_offset,
+    #                 "min_duration_on": 0.1,
+    #                 "min_duration_off": 0.1}
+
+
+    hyperparameters = {
                     "min_duration_on": 0.1,
                     "min_duration_off": 0.1}
-    vad_pipeline = VoiceActivitySegmentation(segmentation=vad_model, device=torch.device(device))
+
+    # vad_pipeline = VoiceActivitySegmentation(segmentation=vad_model, device=torch.device(device))
+        
+    vad_pipeline = VoiceActivitySegmentation(device=torch.device(device))
     vad_pipeline.instantiate(hyperparameters)
 
     return vad_pipeline
@@ -198,7 +206,7 @@ class Binarize:
 class VoiceActivitySegmentation(VoiceActivityDetection):
     def __init__(
         self,
-        segmentation: PipelineModel = "pyannote/segmentation",
+        segmentation: PipelineModel = "pyannote/segmentation-3.0",
         fscore: bool = False,
         use_auth_token: Union[Text, None] = None,
         **inference_kwargs,
